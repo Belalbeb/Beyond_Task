@@ -1,0 +1,250 @@
+<odoo>
+<record id="equipment_loan_tree_view" model="ir.ui.view">
+    <field name="name">equipment.loan.tree</field>
+    <field name="model">equipment.loan</field>
+    <field name="arch" type="xml">
+        <tree decoration-danger="is_overdue">
+            <field name="name"/>
+            <field name="item_id"/>
+            <field name="borrower_id"/>
+            <field name="date_start"/>
+            <field name="date_due"/>
+            <field name="date_return"/>
+            <field name="days_late"/>
+            <field name="penalty_amount"/>
+            <field name="state"/>
+            <field name="is_overdue"/>
+        </tree>
+    </field>
+</record>
+
+    <record id="equipment_loan_form_view" model="ir.ui.view">
+    <field name="name">equipment.loan.form</field>
+    <field name="model">equipment.loan</field>
+    <field name="arch" type="xml">
+
+        <form>
+
+            <header>
+
+                <button
+                    name="action_confirm"
+                    type="object"
+                    string="Confirm"
+                    class="btn-primary"
+                    invisible="state != 'draft'"
+                />
+
+                <button
+                    name="action_open_return_wizard"
+                    type="object"
+                    string="Return"
+                    class="btn-primary"
+                    invisible="state != 'confirmed'"
+                />
+
+                <button
+                    name="action_cancel"
+                    type="object"
+                    string="Cancel"
+                    invisible="state not in ('draft', 'confirmed')"
+                />
+
+                <button
+                    name="action_draft"
+                    type="object"
+                    string="Reset to Draft"
+                    invisible="state != 'cancelled'"
+                />
+
+                <field
+                    name="state"
+                    widget="statusbar"
+                />
+
+            </header>
+
+            <sheet>
+
+                <group>
+                    <group>
+                        <field name="name"/>
+                        <field name="item_id"/>
+                        <field name="borrower_id"/>
+                    </group>
+
+                    <group>
+                        <field name="date_start"/>
+                        <field name="date_due"/>
+
+                    </group>
+                </group>
+
+                <group>
+                    <field name="days_late"/>
+                    <field name="penalty_amount"/>
+
+                </group>
+
+                <notebook>
+                    <page string="Notes">
+                        <field name="notes"/>
+                    </page>
+                </notebook>
+
+            </sheet>
+
+            <div class="oe_chatter">
+            <field name="activity_ids"/>
+            <field name="message_follower_ids"/>
+            <field name="message_ids"/>
+        </div>
+
+        </form>
+
+    </field>
+</record>
+
+
+    <record id="equipment_loan_search_view" model="ir.ui.view">
+    <field name="name">equipment.loan.search</field>
+    <field name="model">equipment.loan</field>
+    <field name="arch" type="xml">
+
+        <search>
+
+
+            <field name="name"/>
+            <field name="item_id"/>
+            <field name="borrower_id"/>
+
+
+            <separator/>
+
+            <filter
+                string="My Loans"
+                name="my_loans"
+                domain="[('borrower_id', '=', uid)]"
+            />
+
+            <filter
+                string="Overdue"
+                name="overdue"
+                domain="[('is_overdue', '=', True)]"
+            />
+
+            <filter
+                string="Active"
+                name="active_loans"
+                domain="[('state', 'in', ['draft', 'confirmed'])]"
+            />
+
+
+            <group expand="0" string="Group By">
+
+                <filter
+                    string="State"
+                    name="group_state"
+                    context="{'group_by': 'state'}"
+                />
+
+                <filter
+                    string="Item"
+                    name="group_item"
+                    context="{'group_by': 'item_id'}"
+                />
+
+                <filter
+                    string="Borrower"
+                    name="group_borrower"
+                    context="{'group_by': 'borrower_id'}"
+                />
+
+            </group>
+
+        </search>
+
+    </field>
+</record>
+
+
+    <record id="equipment_loan_kanban_view" model="ir.ui.view">
+        <field name="name">equipment.loan.kanban</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="item_id"/>
+                <field name="borrower_id"/>
+                <field name="date_due"/>
+                <field name="state"/>
+                <field name="is_overdue"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click #{record.is_overdue.raw_value ? 'oe_kanban_color_2' : ''}">
+                            <strong>
+                                <field name="name"/>
+                            </strong>
+                            <div>
+                                <field name="item_id"/>
+                            </div>
+                            <div>
+                                <field name="borrower_id"/>
+                            </div>
+                            <div>
+                                <field name="date_due"/>
+                            </div>
+                            <div>
+                                <field name="state"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="equipment_loan_graph_view" model="ir.ui.view">
+        <field name="name">equipment.loan.graph</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <graph string="Equipment Loans" type="bar">
+                <field name="state"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="equipment_loan_pivot_view" model="ir.ui.view">
+        <field name="name">equipment.loan.pivot</field>
+        <field name="model">equipment.loan</field>
+        <field name="arch" type="xml">
+            <pivot string="Equipment Loans">
+                <field name="state" type="row"/>
+                <field name="borrower_id" type="col"/>
+                <field name="penalty_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_equipment_loan" model="ir.actions.act_window">
+        <field name="name">Equipment Loans</field>
+        <field name="res_model">equipment.loan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="equipment_loan_search_view"/>
+    </record>
+
+    <record id="action_equipment_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">equipment.loan</field>
+        <field name="view_mode">kanban,graph,pivot,tree,form</field>
+        <field name="search_view_id" ref="equipment_loan_search_view"/>
+        <field name="context">{'search_default_active_loans': 1}</field>
+    </record>
+
+
+
+
+
+
+</odoo>

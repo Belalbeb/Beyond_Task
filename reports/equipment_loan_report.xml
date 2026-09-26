@@ -1,0 +1,106 @@
+<odoo>
+
+    <record id="action_report_loan_receipt"
+            model="ir.actions.report">
+
+        <field name="name">Loan Receipt</field>
+
+        <field name="model">equipment.loan</field>
+
+        <field name="report_type">qweb-pdf</field>
+
+        <field name="report_name">porcelia_equipment_loan.report_loan_receipt</field>
+
+        <field name="report_file">porcelia_equipment_loan.report_loan_receipt</field>
+
+        <field name="binding_model_id" ref="model_equipment_loan"/>
+
+        <field name="binding_type">report</field>
+
+    </record>
+
+
+
+    <template id="report_loan_receipt">
+
+    <t t-call="web.html_container">
+
+        <t t-foreach="docs" t-as="loan">
+
+            <t t-call="web.external_layout">
+
+                <div class="page">
+
+                    <h2>Loan Receipt</h2>
+
+                    <table class="table table-sm">
+
+                        <tr>
+                            <td><strong>Loan Reference</strong></td>
+                            <td>
+                                <span t-field="loan.name"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Item</strong></td>
+                            <td>
+                                <span t-field="loan.item_id"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Borrower</strong></td>
+                            <td>
+                                <span t-field="loan.borrower_id"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Start Date</strong></td>
+                            <td>
+                                <span t-field="loan.date_start"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Due Date</strong></td>
+                            <td>
+                                <span t-field="loan.date_due"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Return Date</strong></td>
+                            <td>
+                                <span t-field="loan.date_return"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Condition Score</strong></td>
+                            <td>
+                                <span t-field="loan.item_id.condition_score"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Penalty</strong></td>
+                            <td>
+                                <span t-field="loan.penalty_amount"/>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </t>
+
+        </t>
+
+    </t>
+
+</template>
+
+</odoo>

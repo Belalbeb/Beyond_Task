@@ -1,0 +1,35 @@
+<odoo>
+    <record id="equipment_category_tree_view" model="ir.ui.view">
+        <field name="name">equipment.category.tree</field>
+        <field name="model">equipment.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="item_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="equipment_category_form_view" model="ir.ui.view">
+        <field name="name">equipment.category.form</field>
+        <field name="model">equipment.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="parent_id"/>
+                        <field name="item_count"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_equipment_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">equipment.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,129 @@
+<t t-name="porcelia_equipment_loan.EquipmentDashboard">
+
+    <div class="equipment-dashboard">
+
+        <h1>Equipment Overview</h1>
+
+        <div class="dashboard-filters">
+
+            <select t-att-value="state.period"
+                    t-on-change="onPeriodChange">
+
+                <option value="week">
+                    This Week
+                </option>
+
+                <option value="month">
+                    This Month
+                </option>
+
+                <option value="all">
+                    All
+                </option>
+
+            </select>
+
+        </div>
+
+        <div t-if="state.loading">
+            Loading...
+        </div>
+
+        <div t-elif="state.data">
+
+            <div class="dashboard-kpis">
+
+                <div class="kpi-card">
+                    <h3>Total Items</h3>
+                    <span>
+                        <t t-esc="state.data.total_items"/>
+                    </span>
+                </div>
+
+                <div class="kpi-card">
+                    <h3>Items On Loan</h3>
+                    <span>
+                        <t t-esc="state.data.items_on_loan"/>
+                    </span>
+                </div>
+
+                <div class="kpi-card">
+                    <h3>Overdue Loans</h3>
+                    <span>
+                        <t t-esc="state.data.overdue_loans"/>
+                    </span>
+                </div>
+
+                <div class="kpi-card">
+                    <h3>Total Penalties</h3>
+                    <span>
+                        <t t-esc="state.data.total_penalties"/>
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="overdue-section">
+
+                <h2>Most Overdue Loans</h2>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Item</th>
+                            <th>Borrower</th>
+                            <th>Days Late</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <t t-if="state.data.top_overdue.length">
+
+                            <t t-foreach="state.data.top_overdue"
+                               t-as="loan"
+                               t-key="loan.id">
+
+                                <tr  t-on-click="() => this.openLoan(loan.id)">
+                                    <td>
+                                        <t t-esc="loan.reference"/>
+                                    </td>
+
+                                    <td>
+                                        <t t-esc="loan.item"/>
+                                    </td>
+
+                                    <td>
+                                        <t t-esc="loan.borrower"/>
+                                    </td>
+
+                                    <td>
+                                        <t t-esc="loan.days_late"/>
+                                    </td>
+                                </tr>
+
+                            </t>
+
+                        </t>
+
+                        <t t-else="">
+                            <tr>
+                                <td colspan="4">
+                                    No overdue loans
+                                </td>
+                            </tr>
+                        </t>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</t>

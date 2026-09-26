@@ -1,0 +1,87 @@
+<odoo>
+
+    <record id="category_laptops" model="equipment.category">
+        <field name="name">Laptops</field>
+    </record>
+
+    <record id="category_measuring_devices" model="equipment.category">
+        <field name="name">Measuring Devices</field>
+    </record>
+
+    <record id="category_display_materials" model="equipment.category">
+        <field name="name">Display Materials</field>
+    </record>
+
+
+
+    <record id="item_laptop_1" model="equipment.item">
+    <field name="name">Dell Latitude 5520</field>
+    <field name="category_id" ref="category_laptops"/>
+    <field name="daily_rate">100</field>
+    <field name="condition_score">95</field>
+</record>
+    <record id="item_laptop_2" model="equipment.item">
+    <field name="name">HP ProBook 450</field>
+    <field name="category_id" ref="category_laptops"/>
+    <field name="daily_rate">90</field>
+    <field name="condition_score">90</field>
+</record>
+
+<record id="item_measuring_1" model="equipment.item">
+    <field name="name">Digital Tile Measuring Device</field>
+    <field name="category_id" ref="category_measuring_devices"/>
+    <field name="daily_rate">50</field>
+    <field name="condition_score">85</field>
+</record>
+
+<record id="item_sample_case_1" model="equipment.item">
+    <field name="name">Tile Sample Case</field>
+    <field name="category_id" ref="category_display_materials"/>
+    <field name="daily_rate">30</field>
+    <field name="condition_score">80</field>
+</record>
+
+<record id="item_display_stand_1" model="equipment.item">
+    <field name="name">Display Stand</field>
+    <field name="category_id" ref="category_display_materials"/>
+    <field name="daily_rate">40</field>
+    <field name="condition_score">88</field>
+</record>
+
+
+    <record id="loan_demo_draft" model="equipment.loan">
+    <field name="item_id" ref="item_laptop_1"/>
+    <field name="borrower_id" ref="base.user_admin"/>
+    <field name="date_start">2026-09-25 09:00:00</field>
+    <field name="date_due">2026-09-30 17:00:00</field>
+    <field name="state">draft</field>
+</record>
+
+    <record id="loan_demo_confirmed" model="equipment.loan">
+    <field name="item_id" ref="item_laptop_2"/>
+    <field name="borrower_id" ref="base.user_admin"/>
+    <field name="date_start">2026-09-25 09:00:00</field>
+    <field name="date_due">2026-09-30 17:00:00</field>
+    <field name="state">confirmed</field>
+</record>
+
+
+    <record id="loan_demo_returned" model="equipment.loan">
+    <field name="item_id" ref="item_measuring_1"/>
+    <field name="borrower_id" ref="base.user_admin"/>
+    <field name="date_start">2026-09-20 09:00:00</field>
+    <field name="date_due">2026-09-22 17:00:00</field>
+    <field name="date_return">2026-09-24 17:00:00</field>
+    <field name="state">returned</field>
+</record>
+
+
+    <record id="loan_demo_cancelled" model="equipment.loan">
+    <field name="item_id" ref="item_sample_case_1"/>
+    <field name="borrower_id" ref="base.user_admin"/>
+    <field name="date_start">2026-09-26 09:00:00</field>
+    <field name="date_due">2026-10-01 17:00:00</field>
+    <field name="state">cancelled</field>
+</record>
+
+</odoo>

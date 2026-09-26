@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="porcelia_equipment_loan.ConditionGauge">
+
+        <div class="condition-gauge">
+
+            <div class="condition-gauge-segments">
+
+                <t t-foreach="segments" t-as="segment" t-key="segment">
+
+                    <span
+                        t-att-class="getSegmentClass(segment)"
+                        t-on-click="setValue"
+                        t-att-data-segment="segment"
+                    />
+
+                </t>
+
+            </div>
+
+            <span class="condition-gauge-value">
+                <t t-esc="value"/>
+            </span>
+
+        </div>
+
+    </t>
+
+</templates>

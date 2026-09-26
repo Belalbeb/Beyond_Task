@@ -1,0 +1,29 @@
+<odoo>
+
+    <record id="seq_equipment_loan"
+        model="ir.sequence">
+
+    <field name="name">Equipment Loan</field>
+
+    <field name="code">equipment.loan</field>
+
+    <field name="prefix">LOAN/%(year)s/</field>
+
+    <field name="padding">4</field>
+
+</record>
+
+
+<record id="seq_equipment_item" model="ir.sequence">
+
+    <field name="name">Equipment Item</field>
+
+    <field name="code">equipment.item</field>
+
+    <field name="prefix">ITEM/%(year)s/</field>
+
+    <field name="padding">4</field>
+
+</record>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="porcelia_equipment_loan.OverdueLoanSystray">
+
+        <t t-if="state.count > 0">
+
+            <div
+                class="o_systray_item"
+                t-on-click="openLoans"
+                title="Overdue Equipment Loans"
+            >
+                <span class="fa fa-exclamation-triangle"/>
+
+                <span class="o_systray_counter">
+                    <t t-esc="state.count"/>
+                </span>
+            </div>
+
+        </t>
+
+    </t>
+
+</templates>
