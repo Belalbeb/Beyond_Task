@@ -34,9 +34,9 @@ export class EquipmentDashboard extends Component {
         this.state.loading = false;
     }
 
-    onPeriodChange(event) {
+   async onPeriodChange(event) {
         this.state.period = event.target.value;
-        this.load();
+        await this.load();
     }
 
     openLoan(loanId) {

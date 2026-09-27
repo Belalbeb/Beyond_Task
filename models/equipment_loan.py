@@ -1,5 +1,7 @@
+import math
+
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, AccessError
 from odoo.osv import expression
 
 class EquipmentLoan(models.Model):
@@ -115,8 +117,9 @@ class EquipmentLoan(models.Model):
                 delay = loan.date_return - loan.date_due
 
                 if delay.total_seconds() > 0:
-                    loan.days_late = delay.days
-
+                    loan.days_late = math.ceil(
+                        delay.total_seconds() / 86400
+                    )
 
 
     @api.model_create_multi
@@ -135,6 +138,12 @@ class EquipmentLoan(models.Model):
 
 
     def action_confirm(self):
+        if not self.env.user.has_group(
+                "porcelia_equipment_loan.group_equipment_manager"
+        ):
+            raise AccessError(
+                "Only Equipment Managers can confirm loans."
+            )
         for loan in self:
             if loan.state != "draft":
                 raise ValidationError(
@@ -250,37 +259,34 @@ class EquipmentLoan(models.Model):
 
     @api.model
     def get_dashboard_data(self, period):
-        now = fields.Datetime.now()
-        start_date = False
+        Loan = self.env["equipment.loan"]
+        Item = self.env["equipment.item"]
+
+        total_items = Item.search_count([
+            ("active", "=", True)
+        ])
+
+        items_on_loan = Item.search_count([
+            ("active", "=", True),
+            ("state", "=", "on_loan")
+        ])
+
+        overdue_count = Loan.search_count([
+            ("state", "=", "confirmed"),
+            ("is_overdue", "=", True),
+            ("date_return", "=", False)
+        ])
+
+        today = fields.Date.context_today(self)
 
         if period == "week":
-            today = fields.Date.context_today(self)
-            start_date = fields.Datetime.to_datetime(
-                fields.Date.start_of(today, "week")
-            )
+            start_date = fields.Date.start_of(today, "week")
 
         elif period == "month":
-            today = fields.Date.context_today(self)
-            start_date = fields.Datetime.to_datetime(
-                fields.Date.start_of(today, "month")
-            )
+            start_date = fields.Date.start_of(today, "month")
 
-        total_items = self.env["equipment.item"].search_count([
-            ("active", "=", True),
-        ])
-
-        items_on_loan = self.env["equipment.item"].search_count([
-            ("active", "=", True),
-            ("state", "=", "on_loan"),
-        ])
-
-        overdue_loans = self.search([
-            ("state", "=", "confirmed"),
-            ("date_return", "=", False),
-            ("is_overdue", "=", True),
-        ])
-
-        overdue_count = len(overdue_loans)
+        else:
+            start_date = False
 
         penalty_domain = [
             ("penalty_amount", ">", 0),
@@ -291,40 +297,38 @@ class EquipmentLoan(models.Model):
             penalty_domain.append(
                 ("date_return", ">=", start_date)
             )
-            penalty_domain.append(
-                ("date_return", "<=", now)
-            )
 
-        penalty_loans = self.search(penalty_domain)
+        penalty_loans = Loan.search(penalty_domain)
 
-        total_penalties = sum(
-            penalty_loans.mapped("penalty_amount")
+        top_overdue = Loan.search(
+            [
+                ("state", "=", "confirmed"),
+                ("is_overdue", "=", True),
+                ("date_return", "=", False),
+            ],
+            order="date_due asc",
+            limit=5,
         )
-
-        top_overdue = []
-
-        for loan in overdue_loans.sorted(
-                key=lambda loan: loan.date_due
-        )[:5]:
-            delay = now - loan.date_due
-
-            days_late = max(
-                0,
-                int(delay.total_seconds() / 86400)
-            )
-
-            top_overdue.append({
-                "id": loan.id,
-                "reference": loan.name,
-                "item": loan.item_id.display_name,
-                "borrower": loan.borrower_id.display_name,
-                "days_late": days_late,
-            })
 
         return {
             "total_items": total_items,
             "items_on_loan": items_on_loan,
             "overdue_loans": overdue_count,
-            "total_penalties": total_penalties,
-            "top_overdue": top_overdue,
+            "total_penalties": sum(
+                penalty_loans.mapped("penalty_amount")
+            ),
+            "top_overdue": [
+                {
+                    "id": loan.id,
+                    "reference": loan.name,
+                    "item": loan.item_id.display_name,
+                    "borrower": loan.borrower_id.display_name,
+                    "days_late": max(
+                        0,
+                        (fields.Datetime.now() - loan.date_due).days
+                    ),
+                }
+                for loan in top_overdue
+            ],
         }
+    

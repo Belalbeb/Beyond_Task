@@ -33,6 +33,7 @@
                     string="Confirm"
                     class="btn-primary"
                     invisible="state != 'draft'"
+                    groups="porcelia_equipment_loan.group_equipment_manager"
                 />
 
                 <button
@@ -43,12 +44,12 @@
                     invisible="state != 'confirmed'"
                 />
 
-                <button
-                    name="action_cancel"
-                    type="object"
-                    string="Cancel"
-                    invisible="state not in ('draft', 'confirmed')"
-                />
+             <button
+              name="action_cancel"
+              type="object"
+              string="Cancel"
+              invisible="not id or state != 'draft'"
+              />
 
                 <button
                     name="action_draft"

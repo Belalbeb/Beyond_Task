@@ -93,35 +93,28 @@ class EquipmentItem(models.Model):
             )
             record.state = "on_loan" if active_loan else "available"
 
-
-
-
     @api.depends("loan_ids.date_start","loan_ids.date_return","loan_ids.state",)
     def _compute_total_days_on_loan(self):
-        if not self.ids:
-            return
 
         self.env.cr.execute("""
             SELECT
                 item_id,
                 SUM(
-                    EXTRACT(
-                        EPOCH FROM (
-                            COALESCE(date_return, NOW()) - date_start
-                        )
-                    ) / 86400
-                )::INTEGER
+                    DATE_PART(
+                        'day',
+                        COALESCE(date_return, NOW()) - date_start
+                    )
+                )
             FROM equipment_loan
             WHERE item_id IN %s
               AND state IN ('confirmed', 'returned')
-              AND date_start IS NOT NULL
             GROUP BY item_id
         """, [tuple(self.ids)])
 
         days_by_item = dict(self.env.cr.fetchall())
 
-        for record in self:
-            record.total_days_on_loan = days_by_item.get(record.id, 0)
+        for item in self:
+            item.total_days_on_loan = days_by_item.get(item.id, 0)
 
 
 
